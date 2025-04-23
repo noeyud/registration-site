@@ -1,7 +1,4 @@
-// Project: Registration Website (Next.js + Tailwind CSS)
-// ================================================
-// Enhanced UI with gradient background, Google Fonts, and polished form design
-
+// pages/register.js
 import Head from 'next/head';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
@@ -15,19 +12,18 @@ export default function Register() {
     storeLocation: '',
     phone: '',
     installDate: '',
-    businessRegNo: '',
     purchaseSource: ''
   });
   const [otp, setOtp] = useState(null);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (sn) setForm(f => ({ ...f, sn }));
+    if (sn) setForm(prev => ({ ...prev, sn }));
   }, [sn]);
 
   const handleChange = e => {
     const { name, value } = e.target;
-    setForm(f => ({ ...f, [name]: value }));
+    setForm(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async e => {
@@ -42,16 +38,16 @@ export default function Register() {
       });
       const data = await res.json();
       if (res.ok) setOtp(data.otp);
-      else setError(data.error || 'Registration failed');
+      else setError(data.error || '등록에 실패했습니다.');
     } catch {
-      setError('Network error. Please try again.');
+      setError('네트워크 오류가 발생했습니다. 다시 시도해주세요.');
     }
   };
 
   return (
     <>
       <Head>
-        <title>Customer Registration</title>
+        <title>고객등록</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link
           href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
@@ -60,59 +56,121 @@ export default function Register() {
       </Head>
 
       <div className="min-h-screen bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 flex items-center justify-center font-poppins">
-        <div className="w-full max-w-xl bg-white bg-opacity-90 backdrop-blur-md rounded-3xl shadow-2xl p-10">
-          {/* Optional: Place your logo in public/logo.png */}
+        <div className="w-full max-w-lg bg-white bg-opacity-90 backdrop-blur-md rounded-3xl shadow-2xl p-8">
           <div className="flex justify-center mb-6">
             <img src="/logo.png" alt="Logo" className="h-8 w-auto" />
           </div>
-          <h1 className="text-4xl font-semibold text-gray-800 text-center mb-8">
-            Device Registration
+          <h1 className="text-3xl font-semibold text-gray-800 text-center mb-6">
+            고객등록
           </h1>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {[
-              { label: 'Serial Number', name: 'sn', type: 'text', placeholder: 'Auto-filled' },
-              { label: 'Store Name', name: 'storeName', type: 'text', placeholder: 'My Store' },
-              { label: 'Store Location', name: 'storeLocation', type: 'text', placeholder: 'City, Address' },
-              { label: 'Phone Number', name: 'phone', type: 'tel', placeholder: '010-1234-5678' },
-              { label: 'Install Date', name: 'installDate', type: 'date' },
-              { label: 'Business Registration No.', name: 'businessRegNo', type: 'text', placeholder: '123-45-67890' },
-              { label: 'Purchase Source (Dealer)', name: 'purchaseSource', type: 'text', placeholder: 'Dealer Name' }
-            ].map(field => (
-              <div key={field.name}>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {field.label}
-                </label>
-                <input
-                  name={field.name}
-                  type={field.type}
-                  value={form[field.name]}
-                  onChange={handleChange}
-                  placeholder={field.placeholder || ''}
-                  readOnly={field.name === 'sn'}
-                  required={field.name !== 'sn'}
-                  className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-                />
-              </div>
-            ))}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                시리얼 넘버
+              </label>
+              <input
+                name="sn"
+                type="text"
+                value={form.sn}
+                onChange={handleChange}
+                placeholder="시리얼 넘버 입력"
+                className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                매장명
+              </label>
+              <input
+                name="storeName"
+                type="text"
+                value={form.storeName}
+                onChange={handleChange}
+                placeholder="매장명 입력"
+                className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                매장 위치
+              </label>
+              <input
+                name="storeLocation"
+                type="text"
+                value={form.storeLocation}
+                onChange={handleChange}
+                placeholder="매장 위치 입력"
+                className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                연락처
+              </label>
+              <input
+                name="phone"
+                type="tel"
+                value={form.phone}
+                onChange={handleChange}
+                placeholder="010-1234-5678"
+                className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                설치일자
+              </label>
+              <input
+                name="installDate"
+                type="date"
+                value={form.installDate}
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                구매처(대리점)
+              </label>
+              <input
+                name="purchaseSource"
+                type="text"
+                value={form.purchaseSource}
+                onChange={handleChange}
+                placeholder="구매처 입력"
+                className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                required
+              />
+            </div>
 
             <button
               type="submit"
               className="w-full py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition-colors shadow-md"
             >
-              Register Now
+              정보 확인
             </button>
           </form>
 
           {otp && (
-            <div className="mt-8 p-4 bg-green-50 border border-green-200 text-green-800 rounded-lg">
-              <p className="font-medium">🎉 Your OTP Code:</p>
-              <p className="text-center text-3xl font-bold mt-2">{otp}</p>
+            <div className="mt-6 p-4 bg-green-50 border border-green-200 text-green-800 rounded-lg">
+              <p className="font-medium">🎉 등록이 완료되었습니다. OTP:</p>
+              <p className="text-center text-2xl font-bold mt-2">{otp}</p>
             </div>
           )}
 
           {error && (
-            <div className="mt-8 p-4 bg-red-50 border border-red-200 text-red-800 rounded-lg">
+            <div className="mt-6 p-4 bg-red-50 border border-red-200 text-red-800 rounded-lg">
               {error}
             </div>
           )}

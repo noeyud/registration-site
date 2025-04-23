@@ -1,0 +1,15 @@
+# dependencies
+node_modules/
+
+# Next.js build output
+.next/
+out/
+
+# local env files
+.env.local
+
+# macOS
+.DS_Store
+
+# windows
+Thumbs.db

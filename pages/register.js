@@ -63,7 +63,7 @@ export default function Register() {
         <div className="w-full max-w-xl bg-white bg-opacity-90 backdrop-blur-md rounded-3xl shadow-2xl p-10">
           {/* Optional: Place your logo in public/logo.png */}
           <div className="flex justify-center mb-6">
-            <img src="/logo.png" alt="Logo" className="h-12" />
+            <img src="/logo.png" alt="Logo" className="h-8 w-auto" />
           </div>
           <h1 className="text-4xl font-semibold text-gray-800 text-center mb-8">
             Device Registration
@@ -91,7 +91,7 @@ export default function Register() {
                   placeholder={field.placeholder || ''}
                   readOnly={field.name === 'sn'}
                   required={field.name !== 'sn'}
-                  className={`w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition`}                  
+                  className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
                 />
               </div>
             ))}

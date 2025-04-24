@@ -16,6 +16,7 @@ export default function Register() {
   });
   const [otp, setOtp] = useState(null);
   const [error, setError] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     if (sn) setForm(prev => ({ ...prev, sn }));
@@ -27,6 +28,8 @@ export default function Register() {
   };
 
   const handleSubmit = async e => {
+    if (submitting) return;
+    setSubmitting(true);
     e.preventDefault();
     setError(null);
     setOtp(null);
@@ -106,7 +109,10 @@ export default function Register() {
               <label className="block text-sm font-medium text-gray-700 mb-1">구매처(대리점)</label>
               <input name="purchaseSource" type="text" value={form.purchaseSource} onChange={handleChange} placeholder="구매처 입력" className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 transition" required />
             </div>
-            <button type="submit" className="w-full py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">정보 확인</button>
+            <button
+              type="submit"
+              disabled={submitting || otp != null}
+              className={`w-full py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition-colors shadow-md ${submitting || otp != null ? 'opacity-50 cursor-not-allowed' : ''}` className="w-full py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">정보 확인</button>
           </form>
 
           {otp && (

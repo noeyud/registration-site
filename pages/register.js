@@ -85,7 +85,82 @@ export default function Register() {
 
           {!otp && (
   <form onSubmit={handleSubmit} className="space-y-4">
-    {/* ...기존 폼 필드들... */}
+    <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">시리얼 넘버</label>
+              <input
+                name="sn"
+                type="text"
+                value={form.sn}
+                onChange={handleChange}
+                placeholder="시리얼 넘버 입력"
+                className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 transition"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">매장명</label>
+              <input
+                name="storeName"
+                type="text"
+                value={form.storeName}
+                onChange={handleChange}
+                placeholder="매장명 입력"
+                className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 transition"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">매장 위치</label>
+              <input
+                name="storeLocation"
+                type="text"
+                value={form.storeLocation}
+                onChange={handleChange}
+                placeholder="매장 위치 입력"
+                className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 transition"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">연락처</label>
+              <input
+                name="phone"
+                type="tel"
+                value={form.phone}
+                onChange={handleChange}
+                placeholder="010-1234-5678"
+                className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 transition"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">설치일자</label>
+              <input
+                name="installDate"
+                type="date"
+                value={form.installDate}
+                onChange={handleChange}
+                className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 transition"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">구매처(대리점)</label>
+              <input
+                name="purchaseSource"
+                type="text"
+                value={form.purchaseSource}
+                onChange={handleChange}
+                placeholder="구매처 입력"
+                className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 transition"
+                required
+              />
+            </div>
     <button
       type="submit"
       disabled={submitting}

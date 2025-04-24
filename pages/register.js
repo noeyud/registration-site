@@ -23,9 +23,14 @@ export default function Register() {
   }, [sn]);
 
   const handleChange = e => {
-    const { name, value } = e.target;
+    const { name, value: rawValue } = e.target;
+    const value =
+      name === 'sn'
+        ? rawValue.replace(/\D/g, '')    // 숫자 외 모두 제거
+        : rawValue;
     setForm(prev => ({ ...prev, [name]: value }));
   };
+  
 
   const handleSubmit = async e => {
     if (submitting) return;
@@ -90,9 +95,11 @@ export default function Register() {
               <input
                 name="sn"
                 type="text"
+                inputMode="numeric"                  // 모바일에서 숫자 키패드 표시
+                pattern="\d*"                        // 숫자만 허용
                 value={form.sn}
                 onChange={handleChange}
-                placeholder="시리얼 넘버 입력"
+                placeholder="시리얼 넘버 입력(숫자만 기입)"
                 className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 transition"
                 required
               />

@@ -2,7 +2,7 @@
 import Head from 'next/head';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { derivePassword } from '../lib/password';
+
 
 export default function Register() {
   const router = useRouter();
@@ -38,13 +38,18 @@ export default function Register() {
     setSubmitting(true);
     e.preventDefault();
     setError(null);
-    setOtp(null);
+
   
     try {
-      // 1) 시리얼 넘버로부터 고정된 비밀번호 생성
-      const password = derivePassword(form.sn);
+      const resPw = await fetch('/api/derive-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sn: form.sn }),
+      });
+      const { password, error: pwError } = await resPw.json();
+      if (!resPw.ok) throw new Error(pwError || '비밀번호 생성에 실패했습니다.');
       setOtp(password);
-  
+      
       // 2) CS 사이트 자동 제품등록
       await fetch('/api/forward-register', {
         method: 'POST',

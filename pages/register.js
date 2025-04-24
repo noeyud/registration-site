@@ -31,16 +31,32 @@ export default function Register() {
     setError(null);
     setOtp(null);
     try {
+      // 1) OTP 생성
       const res = await fetch('/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form)
       });
       const data = await res.json();
-      if (res.ok) setOtp(data.otp);
-      else setError(data.error || '등록에 실패했습니다.');
-    } catch {
-      setError('네트워크 오류가 발생했습니다. 다시 시도해주세요.');
+      if (!res.ok) throw new Error(data.error || '등록에 실패했습니다.');
+      setOtp(data.otp);
+
+      // 2) CS 사이트 자동 제품등록
+      await fetch('/api/forward-register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sn: form.sn,
+          storeName: form.storeName,
+          phone: form.phone,
+          storeLocation: form.storeLocation,
+          installDate: form.installDate,
+          purchaseSource: form.purchaseSource
+        })
+      });
+    } catch (err) {
+      console.error(err);
+      setError(err.message || '네트워크 오류가 발생했습니다. 다시 시도해주세요.');
     }
   };
 
@@ -65,101 +81,32 @@ export default function Register() {
           </h1>
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* form fields */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                시리얼 넘버
-              </label>
-              <input
-                name="sn"
-                type="text"
-                value={form.sn}
-                onChange={handleChange}
-                placeholder="시리얼 넘버 입력"
-                className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-                required
-              />
+              <label className="block text-sm font-medium text-gray-700 mb-1">시리얼 넘버</label>
+              <input name="sn" type="text" value={form.sn} onChange={handleChange} placeholder="시리얼 넘버 입력" className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 transition" required />
             </div>
-
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                매장명
-              </label>
-              <input
-                name="storeName"
-                type="text"
-                value={form.storeName}
-                onChange={handleChange}
-                placeholder="매장명 입력"
-                className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-                required
-              />
+              <label className="block text-sm font-medium text-gray-700 mb-1">매장명</label>
+              <input name="storeName" type="text" value={form.storeName} onChange={handleChange} placeholder="매장명 입력" className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 transition" required />
             </div>
-
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                매장 위치
-              </label>
-              <input
-                name="storeLocation"
-                type="text"
-                value={form.storeLocation}
-                onChange={handleChange}
-                placeholder="매장 위치 입력"
-                className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-                required
-              />
+              <label className="block text-sm font-medium text-gray-700 mb-1">매장 위치</label>
+              <input name="storeLocation" type="text" value={form.storeLocation} onChange={handleChange} placeholder="매장 위치 입력" className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 transition" required />
             </div>
-
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                연락처
-              </label>
-              <input
-                name="phone"
-                type="tel"
-                value={form.phone}
-                onChange={handleChange}
-                placeholder="010-1234-5678"
-                className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-                required
-              />
+              <label className="block text-sm font-medium text-gray-700 mb-1">연락처</label>
+              <input name="phone" type="tel" value={form.phone} onChange={handleChange} placeholder="010-1234-5678" className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 transition" required />
             </div>
-
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                설치일자
-              </label>
-              <input
-                name="installDate"
-                type="date"
-                value={form.installDate}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-                required
-              />
+              <label className="block text-sm font-medium text-gray-700 mb-1">설치일자</label>
+              <input name="installDate" type="date" value={form.installDate} onChange={handleChange} className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 transition" required />
             </div>
-
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                구매처(대리점)
-              </label>
-              <input
-                name="purchaseSource"
-                type="text"
-                value={form.purchaseSource}
-                onChange={handleChange}
-                placeholder="구매처 입력"
-                className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-                required
-              />
+              <label className="block text-sm font-medium text-gray-700 mb-1">구매처(대리점)</label>
+              <input name="purchaseSource" type="text" value={form.purchaseSource} onChange={handleChange} placeholder="구매처 입력" className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 transition" required />
             </div>
-
-            <button
-              type="submit"
-              className="w-full py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition-colors shadow-md"
-            >
-              정보 확인
-            </button>
+            <button type="submit" className="w-full py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">정보 확인</button>
           </form>
 
           {otp && (

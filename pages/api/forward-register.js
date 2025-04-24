@@ -1,5 +1,4 @@
 // pages/api/forward-register.js
-import fetch from 'node-fetch';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -31,13 +30,12 @@ export default async function handler(req, res) {
   });
 
   try {
+    
     const response = await fetch(
-      'https://cs.softmill.co.kr/CustProduct.jsp?psrc=k',
+      'https://cs.softmill.co.kr/req_save.jsp',
       {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: params.toString()
       }
     );

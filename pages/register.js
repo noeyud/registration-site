@@ -1,192 +1,120 @@
 // pages/register.js
-import Head from 'next/head';
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import Head from 'next/head'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/router'
 
 export default function Register() {
-  const router = useRouter();
-  const { sn } = router.query;
+  const router = useRouter()
+  const { sn } = router.query
   const [form, setForm] = useState({
-    name: '',
-    phone: '',
-    sn: sn || '',
-    storeName: '',
-    storeLocation: '',
-    installDate: '',
-    purchaseSource: ''
-  });
-  const [otp, setOtp] = useState(null);
-  const [error, setError] = useState(null);
-  const [submitting, setSubmitting] = useState(false);
+    name: '', phone: '', sn: sn||'', storeName:'', address:'', installDate:'', dealer:''
+  })
+  const [otp, setOtp]     = useState(null)
+  const [error, setError] = useState(null)
+  const [submitting, setSub] = useState(false)
 
   useEffect(() => {
-    if (sn) setForm(prev => ({ ...prev, sn }));
-  }, [sn]);
+    if (sn) setForm(f => ({ ...f, sn }))
+  }, [sn])
 
   const handleChange = e => {
-    const { name, value: rawValue } = e.target;
-    const value = (name === 'sn' || name === 'phone')
-      ? rawValue.replace(/\D/g, '')
-      : rawValue;
-    setForm(prev => ({ ...prev, [name]: value }));
-  };
+    let v = e.target.value
+    if (e.target.name==='phone' || e.target.name==='sn') {
+      v = v.replace(/\D/g,'')
+    }
+    setForm(f => ({ ...f, [e.target.name]: v }))
+  }
 
   const handleSubmit = async e => {
-    e.preventDefault();
-    if (submitting) return;
-    setSubmitting(true);
-    setError(null);
+    e.preventDefault()
+    if (submitting) return
+    setSub(true); setError(null)
     try {
-      const resPw = await fetch('/api/derive-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch('/api/derive-password',{
+        method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify({ sn: form.sn })
-      });
-      const { password, error: pwError } = await resPw.json();
-      if (!resPw.ok) throw new Error(pwError || 'OTP 생성에 실패했습니다.');
-      setOtp(password);
-      await fetch('/api/forward-register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: form.name,
-          phone: form.phone,
-          sn: form.sn,
-          storeName: form.storeName,
-          storeLocation: form.storeLocation,
-          installDate: form.installDate,
-          purchaseSource: form.purchaseSource
-        })
-      });
-    } catch (err) {
-      console.error(err);
-      setError(err.message || '네트워크 오류가 발생했습니다.');
+      })
+      const { password, error: pwErr } = await res.json()
+      if (!res.ok) throw new Error(pwErr||'OTP 생성 실패')
+      setOtp(password)
+      await fetch('/api/forward-register',{
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify(form)
+      })
+    } catch(err) {
+      setError(err.message)
     } finally {
-      setSubmitting(false);
+      setSub(false)
     }
-  };
+  }
+
+  const fields = [
+    ['name','이름','text','이름 입력'],
+    ['phone','연락처','tel','숫자만 입력'],
+    ['sn','시리얼넘버','text','숫자만 입력'],
+    ['storeName','매장명','text','매장명 입력'],
+    ['address','매장주소','text','매장주소 입력'],
+    ['installDate','설치일자','date',''],
+    ['dealer','구매처(대리점)','text','구매처 입력']
+  ]
 
   return (
     <>
       <Head>
         <title>고객등록</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
       </Head>
-      <div className="bg-white min-h-screen p-4 md:p-8">
-        {/* Header */}
-        <div className="flex items-center mb-8">
-          <img src="/logo.png" alt="Logo" className="h-10" />
-          <h1 className="ml-3 text-2xl font-bold">고객등록</h1>
+
+      {/* ★ 이 div가 뷰포트 전체에 flex 중앙 정렬 ★ */}
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        {/* 카드 컨테이너 */}
+        <div className="w-full max-w-2xl bg-white rounded-lg shadow-lg p-8 mx-4 overflow-auto max-h-screen">
+          <div className="flex justify-center mb-6">
+            <img src="/logo.png" alt="Logo" className="h-10"/>
+          </div>
+          <h1 className="text-2xl font-semibold mb-8 text-center">고객등록</h1>
+
+          {!otp ? (
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {fields.map(([name,label,type,placeholder])=>(
+                <div key={name} className="flex flex-col md:flex-row md:items-center">
+                  <label
+                    htmlFor={name}
+                    className="md:w-1/4 w-full mb-1 md:mb-0 font-medium text-gray-700"
+                  >
+                    {label}
+                  </label>
+                  <div className="md:w-3/4 w-full">
+                    <input
+                      id={name}
+                      name={name}
+                      type={type}
+                      placeholder={placeholder}
+                      value={form[name]}
+                      onChange={handleChange}
+                      className="w-full h-12 px-3 border border-gray-400 rounded focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      required
+                    />
+                  </div>
+                </div>
+              ))}
+              <button
+                type="submit"
+                disabled={submitting}
+                className="w-full h-14 bg-orange-500 text-white rounded font-medium hover:bg-orange-600 transition"
+              >
+                정보 확인
+              </button>
+              {error && <p className="text-red-600 text-center mt-2">{error}</p>}
+            </form>
+          ) : (
+            <div className="text-center">
+              <p className="text-green-600 font-medium mb-2">🎉 등록이 완료되었습니다.</p>
+              <p className="text-3xl font-bold">{otp}</p>
+            </div>
+          )}
         </div>
-
-        {!otp ? (
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 md:gap-4 items-center">
-              <label className="block text-lg md:text-base">이름</label>
-              <input
-                name="name"
-                type="text"
-                value={form.name}
-                onChange={handleChange}
-                placeholder="이름 입력"
-                className="w-full h-12 border border-gray-600 rounded px-3 focus:outline-none"
-                required
-              />
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 md:gap-4 items-center">
-              <label className="block text-lg md:text-base">연락처</label>
-              <input
-                name="phone"
-                type="tel"
-                value={form.phone}
-                onChange={handleChange}
-                placeholder="01012345678"
-                className="w-full h-12 border border-gray-600 rounded px-3 focus:outline-none"
-                required
-              />
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 md:gap-4 items-center">
-              <label className="block text-lg md:text-base">시리얼넘버</label>
-              <input
-                name="sn"
-                type="text"
-                inputMode="numeric"
-                pattern="\d*"
-                value={form.sn}
-                onChange={handleChange}
-                placeholder="숫자만 입력"
-                className="w-full h-12 border border-gray-600 rounded px-3 focus:outline-none"
-                required
-              />
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 md:gap-4 items-center">
-              <label className="block text-lg md:text-base">매장명</label>
-              <input
-                name="storeName"
-                type="text"
-                value={form.storeName}
-                onChange={handleChange}
-                placeholder="매장명 입력"
-                className="w-full h-12 border border-gray-600 rounded px-3 focus:outline-none"
-                required
-              />
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 md:gap-4 items-center">
-              <label className="block text-lg md:text-base">매장주소</label>
-              <input
-                name="storeLocation"
-                type="text"
-                value={form.storeLocation}
-                onChange={handleChange}
-                placeholder="매장주소 입력"
-                className="w-full h-12 border border-gray-600 rounded px-3 focus:outline-none"
-                required
-              />
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 md:gap-4 items-center">
-              <label className="block text-lg md:text-base">설치일자</label>
-              <input
-                name="installDate"
-                type="date"
-                value={form.installDate}
-                onChange={handleChange}
-                className="w-full h-12 border border-gray-600 rounded px-3 focus:outline-none"
-                required
-              />
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 md:gap-4 items-center">
-              <label className="block text-lg md:text-base">구매처(대리점)</label>
-              <input
-                name="purchaseSource"
-                type="text"
-                value={form.purchaseSource}
-                onChange={handleChange}
-                placeholder="대리점 입력"
-                className="w-full h-12 border border-gray-600 rounded px-3 focus:outline-none"
-                required
-              />
-            </div>
-            <button
-              type="submit"
-              disabled={submitting}
-              className="w-full h-14 bg-orange-600 text-white text-lg font-semibold rounded"
-            >
-              정보확인
-            </button>
-          </form>
-        ) : (
-          <div className="mt-8 text-center">
-            <p className="text-xl font-medium text-green-800">🎉 등록 완료! OTP:</p>
-            <p className="mt-4 text-3xl font-bold text-gray-900">{otp}</p>
-          </div>
-        )}
-
-        {error && (
-          <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded text-red-700">
-            {error}
-          </div>
-        )}
       </div>
     </>
-  );
+  )
 }
